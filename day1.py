@@ -1,4 +1,5 @@
 import numpy as np
+from collections import Counter
 
 left = []
 right = []
@@ -16,4 +17,10 @@ left = np.sort(left)
 right = np.sort(right)
 
 # Compute the total distance of the lists
-print(np.sum(np.abs(left - right)))
+print("Part 1:", np.sum(np.abs(left - right)))
+
+# Count the number of times each number in the right list appears
+rightCounter = Counter(right)
+
+similarityScore = np.sum(list(map(lambda num: num * rightCounter[num], left)))
+print("Part 2:", similarityScore)
