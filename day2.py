@@ -20,3 +20,14 @@ def isSafe(report):
     return True
 
 print("Part 1:", np.sum(list(map(isSafe, reports))))
+
+# For each report, delete only the first level and check if it's safe, then
+# delete only the second level and check if it's safe, etc.
+def isSafePart2(report):
+    for i in range(len(report)):
+        if isSafe(report[0:i] + report[i+1:]):
+            return True
+
+    return False
+
+print("Part 2:", np.sum(list(map(isSafePart2, reports))))
