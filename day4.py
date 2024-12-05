@@ -80,3 +80,50 @@ print("Part 1:", count)
 # in me double-counting words, e.g. by searching down-right and up-left
 #
 # 3901 is too high
+
+"""
+M.S
+.A.
+M.S.
+
+M.M
+.A.
+S.S
+
+S.M
+.A.
+S.M
+
+S.S
+.A.
+M.M
+"""
+
+# Count the number of X-MAS
+def isX_mas(grid):
+    diag1 = [grid[i][i] for i in range(0, len(grid))]
+    # print(diag1)
+    diag2 = [grid[i][i] for i in range(len(grid)-1, -1, -1)]
+    # print(diag2)
+
+    return (diag1 == ["M", "A", "S"] or diag1 == ["S", "A", "M"]) and \
+    (diag2 == ["M", "A", "S"] or diag2 == ["S", "A", "M"])
+
+count = 0
+for r in range(len(puzzle)-2):
+    for c in range(len(puzzle[r])-2):
+        subgrid = [puzzle[r+i][c:c+3] for i in range(0, 3)]
+        if isX_mas(subgrid):
+            count += 1
+            for row in subgrid:
+                print(row, "count=", count)
+        else:
+            for row in subgrid:
+                print(row)
+        print("")
+
+    print("------")
+
+print("Part 2:", count)
+
+# 2535 is too high
