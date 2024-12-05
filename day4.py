@@ -99,12 +99,12 @@ S.S
 M.M
 """
 
-# Count the number of X-MAS
+# Count the number of X-MAS in a 3x3 grid
 def isX_mas(grid):
-    diag1 = [grid[i][i] for i in range(0, len(grid))]
-    # print(diag1)
-    diag2 = [grid[i][i] for i in range(len(grid)-1, -1, -1)]
-    # print(diag2)
+    diag1 = [grid[i][i] for i in range(0, 3)]
+    print("diag1=", diag1)
+    diag2 = [grid[2-i][i] for i in range(2, -1, -1)]
+    print("diag2=", diag2)
 
     return (diag1 == ["M", "A", "S"] or diag1 == ["S", "A", "M"]) and \
     (diag2 == ["M", "A", "S"] or diag2 == ["S", "A", "M"])
