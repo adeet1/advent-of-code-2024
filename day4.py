@@ -73,5 +73,10 @@ for r in range(3, len(puzzle)):
 
 print("Part 1:", count)
 
-# 2372 is too low (I had this because my loops were in range(len(puzzle)-4) instead of range(len(puzzle)-3))
+# 2372 is too low (I had this because my loops were in range(len(puzzle)-4) instead of range(len(puzzle)-3)),
+# meaning that I wasn't searching the last row/column of the grid
+#
+# Checking if the word was XMAS or SAMX (instead of just XMAS) made things more confusing to debug - this resulted
+# in me double-counting words, e.g. by searching down-right and up-left
+#
 # 3901 is too high
