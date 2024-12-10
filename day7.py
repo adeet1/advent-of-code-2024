@@ -9,18 +9,28 @@ with open("input/day7.txt", "r") as file:
         puzzle.append([int(x) for x in newRow])
 
 def executeRow(testValue, operands):
-    operatorCombos = list(itertools.product(["+", "*"], repeat=len(operands)-1))
+    print("operands =", operands)
+    operatorCombos = list(itertools.product(["+", "*", "||"], repeat=len(operands)-1))
     
     for operatorCombo in operatorCombos:
-        expression = str(operands[0]) + operatorCombo[0] + str(operands[1])
+        if operatorCombo[0] == "||":
+            expression = "'" + str(operands[0]) + "'+'" + str(operands[1]) + "'"
+        else:
+            expression = str(operands[0]) + operatorCombo[0] + str(operands[1])
+        
+        print("Starting expression:", expression)
 
         for i in range(1, len(operatorCombo)):
-            expression = "(" + expression + ")" + operatorCombo[i] + str(operands[i+1])
-        
-        # print("Expected", testValue, "but was:", eval(expression), "=", expression)
-
-        if testValue == eval(expression):
-            return True
+            if operatorCombo[i] == "||":
+                expression = "'" + str(eval(expression)) + "'+'" + str(operands[i+1]) + "'"
+                print("concat expression:", expression)
+            else:
+                expression = "(" + expression + ")" + operatorCombo[i] + str(operands[i+1])
+            print("Expression:", expression)
+            
+            print("Evaluated to", eval(expression))
+            if testValue == eval(expression):
+                return True
     
     return False
 
