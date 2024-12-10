@@ -10,14 +10,17 @@ with open("input/day7.txt", "r") as file:
         puzzle.append([int(x) for x in newRow])
 
 def concat_operator(a, b):
-    return str(a) + str(b)
+    if a == 0:
+        return b
+
+    return int(str(a) + str(b))
 
 def executeRow(testValue, operands):
-    print("operands =", operands)
+    # print("Operands:", operands)
     operatorCombos = list(itertools.product(["+", "*", "||"], repeat=len(operands)-1))
     
     for operatorCombo in operatorCombos:
-        expression = ""
+        expression = str(operands[0])
         # if operatorCombo[0] == "||":
         #     expression = re.sub(r"(\d+)\s*\|\|\s*(\d+)", r"concat_operator(\1, \2)", expression)
 
@@ -25,13 +28,14 @@ def executeRow(testValue, operands):
 
         for i in range(len(operatorCombo)):
             # forgot to put str(eval) and just did eval which is why i got int str concat errors
-            expression = str(eval("(" + expression + ")")) + operatorCombo[i] + str(operands[i+1])
+            tmp = eval("(" + expression + ")", {"concat_operator": concat_operator})
+            expression = str(tmp) + operatorCombo[i] + str(operands[i+1])
 
             if operatorCombo[i] == "||":
                 expression = re.sub(r"(\d+)\s*\|\|\s*(\d+)", r"concat_operator(\1, \2)", expression)
 
             print("Evaluating expression:", testValue, "?=", expression)
-            if testValue == eval(expression):
+            if testValue == eval(expression, {"concat_operator": concat_operator}):
                 print("----", testValue, "validates ----")
                 return True
     
@@ -45,4 +49,4 @@ for row in puzzle:
     if executeRow(testValue, operands):
         totalCalibrationResult += testValue
 
-print("Part 1:", totalCalibrationResult)
+print("Part 2:", totalCalibrationResult) # 509463489905922 is too high
