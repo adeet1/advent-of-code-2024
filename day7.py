@@ -17,13 +17,13 @@ def executeRow(testValue, operands):
     operatorCombos = list(itertools.product(["+", "*", "||"], repeat=len(operands)-1))
     
     for operatorCombo in operatorCombos:
-        expression = str(operands[0]) + operatorCombo[0] + str(operands[1])
-        if operatorCombo[0] == "||":
-            expression = re.sub(r"(\d+)\s*\|\|\s*(\d+)", r"concat_operator(\1, \2)", expression)
+        expression = ""
+        # if operatorCombo[0] == "||":
+        #     expression = re.sub(r"(\d+)\s*\|\|\s*(\d+)", r"concat_operator(\1, \2)", expression)
 
         print("Evaluating starting expression", expression)
 
-        for i in range(1, len(operatorCombo)):
+        for i in range(len(operatorCombo)):
             # forgot to put str(eval) and just did eval which is why i got int str concat errors
             expression = str(eval("(" + expression + ")")) + operatorCombo[i] + str(operands[i+1])
 
