@@ -16,9 +16,6 @@ print(topMap)
 
 # print all possible trails
 
-# Array to keep track of which locations are visited
-visited = defaultdict(bool)
-
 trailheadScores = {} # trailhead coordinates -> score
 
 # Scan the entire grid for all trailheads, and populate the scores dictionary
@@ -26,7 +23,6 @@ for r in range(len(topMap)):
     for c in range(len(topMap[r])):
         if topMap[r][c] == 0:
             trailheadScores[(r, c)] = 0
-            visited[(r, c)] = True # we've already visited trailheads
 
 print(trailheadScores.keys())
 
@@ -79,6 +75,10 @@ def DFS(r, c, trailSoFar=[0]):
 trails = {}
 for trailhead in trailheadScores.keys():
     r, c = trailhead
+
+    # Array to keep track of which locations are visited
+    visited = defaultdict(bool)
+
     trails[trailhead] = DFS(r, c)
     
 print(trails)
