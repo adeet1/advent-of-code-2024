@@ -35,11 +35,8 @@ def inBounds(r, c):
     return True
 
 # run DFS at each trailhead
-def DFS(r, c, trailSoFar=[0]):
+def DFS(r, c, trailSoFar):
     print("DFS({}, {}, {})".format(r, c, trailSoFar))
-    
-    if not inBounds(r, c):
-        return trailSoFar
     
     visited[(r, c)] = True
 
@@ -52,22 +49,22 @@ def DFS(r, c, trailSoFar=[0]):
     if inBounds(r-1, c):
         print("up from", (r, c))
         if not visited[(r-1, c)] and topMap[r-1][c] == 1 + height:
-            return DFS(r-1, c, trailSoFar + [topMap[r-1][c]])
+            return DFS(r-1, c, trailSoFar + [(r-1, c)])
 
     if inBounds(r+1, c):
         print("down from", (r, c))
         if not visited[(r+1, c)] and topMap[r+1][c] == 1 + height:
-            return DFS(r+1, c, trailSoFar + [topMap[r+1][c]])
+            return DFS(r+1, c, trailSoFar + [(r+1, c)])
     
     if inBounds(r, c-1):
         print("left from", (r, c))
         if not visited[(r, c-1)] and topMap[r][c-1] == 1 + height:
-            return DFS(r, c-1, trailSoFar + [topMap[r][c-1]])
+            return DFS(r, c-1, trailSoFar + [(r, c-1)])
     
     if inBounds(r, c+1):
         print("right from", (r, c))
         if not visited[(r, c+1)] and topMap[r][c+1] == 1 + height:
-            return DFS(r, c+1, trailSoFar + [topMap[r][c+1]])
+            return DFS(r, c+1, trailSoFar + [(r, c+1)])
 
     return trailSoFar
 
@@ -79,7 +76,7 @@ for trailhead in trailheadScores.keys():
     # Array to keep track of which locations are visited
     visited = defaultdict(bool)
 
-    trails[trailhead] = DFS(r, c)
+    trails[trailhead] = DFS(r, c, [(r, c)])
     
 print(trails)
 
