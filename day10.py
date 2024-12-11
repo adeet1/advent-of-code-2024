@@ -1,4 +1,5 @@
 import numpy as np
+from collections import defaultdict
 
 topMap = []
 with open("input/day10.txt", "r") as file:
@@ -16,7 +17,7 @@ print(topMap)
 # print all possible trails
 
 # Array to keep track of which locations are visited
-visited = np.full_like(topMap, fill_value=False).astype(bool)
+visited = defaultdict(bool)
 
 trailheadScores = {} # trailhead coordinates -> score
 
@@ -44,7 +45,7 @@ def DFS(r, c, trailSoFar=[0]):
     if not inBounds(r, c):
         return trailSoFar
     
-    visited[r][c] = True
+    visited[(r, c)] = True
 
     height = topMap[r][c]
     # base case: we found a complete hiking trail
@@ -52,32 +53,35 @@ def DFS(r, c, trailSoFar=[0]):
         return trailSoFar
 
     # look up, down, left, right
-    print("up from", (r, c))
     if inBounds(r-1, c):
-        if not visited[r-1][c] and topMap[r-1][c] == 1 + height:
-            trailSoFar += DFS(r-1, c, trailSoFar + [topMap[r-1][c]])
+        print("up from", (r, c))
+        if not visited[(r-1, c)] and topMap[r-1][c] == 1 + height:
+            return DFS(r-1, c, trailSoFar + [topMap[r-1][c]])
 
-    print("down from", (r, c))
     if inBounds(r+1, c):
-        if not visited[r+1][c] and topMap[r+1][c] == 1 + height:
-            trailSoFar += DFS(r+1, c, trailSoFar + [topMap[r+1][c]])
+        print("down from", (r, c))
+        if not visited[(r+1, c)] and topMap[r+1][c] == 1 + height:
+            return DFS(r+1, c, trailSoFar + [topMap[r+1][c]])
     
-    print("left from", (r, c))
     if inBounds(r, c-1):
-        if not visited[r][c-1] and topMap[r][c-1] == 1 + height:
-            trailSoFar += DFS(r, c-1, trailSoFar + [topMap[r][c-1]])
+        print("left from", (r, c))
+        if not visited[(r, c-1)] and topMap[r][c-1] == 1 + height:
+            return DFS(r, c-1, trailSoFar + [topMap[r][c-1]])
     
-    print("right from", (r, c))
     if inBounds(r, c+1):
-        if not visited[r][c+1] and topMap[r][c+1] == 1 + height:
-            trailSoFar += DFS(r, c+1, trailSoFar + [topMap[r][c+1]])
+        print("right from", (r, c))
+        if not visited[(r, c+1)] and topMap[r][c+1] == 1 + height:
+            return DFS(r, c+1, trailSoFar + [topMap[r][c+1]])
 
     return trailSoFar
 
 # every time we reach a 9, increment the score for the trailhead we started from
+trails = {}
 for trailhead in trailheadScores.keys():
     r, c = trailhead
-    DFS(r, c)
+    trails[trailhead] = DFS(r, c)
+    
+print(trails)
 
 """
 1 2 1
