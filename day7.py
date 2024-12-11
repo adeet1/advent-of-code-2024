@@ -16,29 +16,31 @@ def concat_operator(a, b):
     return int(str(a) + str(b))
 
 def executeRow(testValue, operands):
-    # print("Operands:", operands)
+    # print("Test value", testValue, "with operands", operands)
     operatorCombos = list(itertools.product(["+", "*", "||"], repeat=len(operands)-1))
     
     for operatorCombo in operatorCombos:
         expression = str(operands[0])
-        # if operatorCombo[0] == "||":
-        #     expression = re.sub(r"(\d+)\s*\|\|\s*(\d+)", r"concat_operator(\1, \2)", expression)
-
         print("Evaluating starting expression", expression)
 
+        # Form the full expression
         for i in range(len(operatorCombo)):
             # forgot to put str(eval) and just did eval which is why i got int str concat errors
             tmp = eval("(" + expression + ")", {"concat_operator": concat_operator})
+
             expression = str(tmp) + operatorCombo[i] + str(operands[i+1])
 
             if operatorCombo[i] == "||":
                 expression = re.sub(r"(\d+)\s*\|\|\s*(\d+)", r"concat_operator(\1, \2)", expression)
 
-            print("Evaluating expression:", testValue, "?=", expression)
-            if testValue == eval(expression, {"concat_operator": concat_operator}):
-                print("----", testValue, "validates ----")
-                return True
+            # print("Evaluating expression:", testValue, "?=", expression)
+        
+        # Evaluate the full expression
+        if testValue == eval(expression, {"concat_operator": concat_operator}):
+            print("----", testValue, "VALIDATES ----")
+            return True
     
+    print("----", testValue, "invalid ----")
     return False
 
 totalCalibrationResult = 0
@@ -49,4 +51,4 @@ for row in puzzle:
     if executeRow(testValue, operands):
         totalCalibrationResult += testValue
 
-print("Part 2:", totalCalibrationResult) # 509463489905922 is too high
+print("Part 2:", totalCalibrationResult)
