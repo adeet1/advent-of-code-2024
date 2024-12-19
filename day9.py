@@ -24,7 +24,7 @@ def createDiskMap(inputDisk):
     
     return diskMap
 
-def compactDisk(diskMap):
+def compactDiskPart1(diskMap):
     # A list containing the indices of diskMap corresponding to free space
     isFreeSpace = [diskMap[_] == None for _ in range(len(diskMap))]
     currentDiskMap = copy.deepcopy(diskMap)
@@ -60,6 +60,20 @@ def computeChecksum(compactedDiskMap):
     return checksum
 
 diskMap = createDiskMap(disk)
-compactedDiskMap = compactDisk(diskMap)
+compactedDiskMap = compactDiskPart1(diskMap)
 compactedDiskChecksum = computeChecksum(compactedDiskMap)
 print("Part 1:", compactedDiskChecksum)
+
+def compactDiskPart2(diskMap):
+    # A list containing the indices of diskMap corresponding to free space
+    isFreeSpace = [diskMap[_] == None for _ in range(len(diskMap))]
+    currentDiskMap = copy.deepcopy(diskMap)
+
+    ## TODO
+
+    return currentDiskMap
+
+diskMap = createDiskMap(disk)
+compactedDiskMap = compactDiskPart2(diskMap)
+compactedDiskChecksum = computeChecksum(compactedDiskMap)
+print("Part 2:", compactedDiskChecksum)
