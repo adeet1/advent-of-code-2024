@@ -93,7 +93,6 @@ def compactDiskPart2(diskMap):
             freeSpaceIndex = index
             while currentDiskMap[freeSpaceIndex] == None:
                 freeSpaceIndex += 1
-                print("Found {} free spaces so far at index {}".format(freeSpaceIndex - index, index))
                 
                 # Stop the loop so that we don't go out of bounds
                 # if the rest of the array consists of free spaces
@@ -101,6 +100,7 @@ def compactDiskPart2(diskMap):
                     break
             
             numFreeSpacesAtThisIndex = freeSpaceIndex - index
+            print("Found {} free spaces at index {}".format(numFreeSpacesAtThisIndex, index))
 
             # If there's enough free space for us to move the file here
             if lastFileSize <= numFreeSpacesAtThisIndex:
@@ -108,11 +108,15 @@ def compactDiskPart2(diskMap):
                 # Copy the file here
                 currentDiskMap[index:index+lastFileSize] = [lastFileId] * lastFileSize
 
+                # Mark these spaces as allocated
+                isFreeSpace[index:index+lastFileSize] = [False] * lastFileSize
+
                 # Remove the file from the space where it was allocated previously
                 for _ in range(lastFileSize):
                     currentDiskMap[lastFileIndex-_] = None
+                    isFreeSpace[lastFileIndex-_] = True
 
-                index += lastFileSize
+                index += 1
             else:
                 print("File", lastFileId, "can't fit here")
                 # The file couldn't fit, so we can't allocate it here
