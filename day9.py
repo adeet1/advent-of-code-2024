@@ -67,70 +67,52 @@ print("Part 1:", compactedDiskChecksum)
 
 def compactDiskPart2(diskMap):
     # A list containing the indices of diskMap corresponding to free space
-    isFreeSpace = [diskMap[_] == None for _ in range(len(diskMap))]
     currentDiskMap = copy.deepcopy(diskMap)
-    index = 0
     
     # Three questions:
     # (1) which file do we want to move?
     # (2) how big is the file?
     # (3) how much free space do we have, and will the file fit in that free space?
 
+    # Maps index -> the number of free spaces available, starting at that index until
+    # the next allocated space
+    freeSpaceRange = {}
+    i = 0
+    while i < len(currentDiskMap):
+        # If we're at a free space
+        if currentDiskMap[i] == None:
+            # Count the number of free spaces available at
+            # this index, until the next allocated space
+            j = i
+            while currentDiskMap[j] == None:
+                j += 1
+                if j >= len(currentDiskMap):
+                    break
+            freeSpaceRange[i] = j-i
+            print("Found {} free spaces at index {}".format(j-i, i))
+            i = j
+        else:
+            i += 1
+    
+    print(freeSpaceRange)
+    
+    fileToMove = currentDiskMap[-1]
+    
+
+
+    
+    """
+    freeSpaceRange = {2: 3, 8: 3, 12: 3, 18: 1, 21: 1, 26: 1, 31: 1, 35: 1}
+    Move file 9
+    freeSpaceRange = {4: 1, 8: 3, 12: 3, 18: 1, 21: 1, 26: 1, 31: 1, 35: 1}
+    
+
+    
+    """
+
     # A map telling us the size of each file
     fileSize = Counter(currentDiskMap)
     print(fileSize)
-    lastFileIndex = len(currentDiskMap)-1
-
-    while index < len(currentDiskMap):
-        lastFileId = currentDiskMap[lastFileIndex]
-        lastFileSize = fileSize[lastFileId]
-        print("Current disk map:", currentDiskMap)
-        print("Last file is at index {} - it has id {} and size {}".format(lastFileIndex, lastFileId, lastFileSize))
-        print("index =", index, ": file block =", currentDiskMap[index], ": is free space =", isFreeSpace[index])
-
-        if isFreeSpace[index]:
-            # Count the number of free spaces at this index
-            freeSpaceIndex = index
-            while currentDiskMap[freeSpaceIndex] == None:
-                freeSpaceIndex += 1
-                
-                # Stop the loop so that we don't go out of bounds
-                # if the rest of the array consists of free spaces
-                if freeSpaceIndex == len(currentDiskMap):
-                    break
-            
-            numFreeSpacesAtThisIndex = freeSpaceIndex - index
-            print("Found {} free spaces at index {}".format(numFreeSpacesAtThisIndex, index))
-
-            # If there's enough free space for us to move the file here
-            if lastFileSize <= numFreeSpacesAtThisIndex:
-                print("Moving file", lastFileId, "to these free spaces")
-                # Copy the file here
-                currentDiskMap[index:index+lastFileSize] = [lastFileId] * lastFileSize
-
-                # Mark these spaces as allocated
-                isFreeSpace[index:index+lastFileSize] = [False] * lastFileSize
-
-                # Remove the file from the space where it was allocated previously
-                for _ in range(lastFileSize):
-                    currentDiskMap[lastFileIndex-_] = None
-                    isFreeSpace[lastFileIndex-_] = True
-
-                index += 1
-            else:
-                print("File", lastFileId, "can't fit here")
-                # The file couldn't fit, so we can't allocate it here
-                # But stay here in case we find another file that fits here
-                pass
-
-            lastFileIndex -= lastFileSize
-            # In case the lastFileIndex is at a free space, keep rewinding
-            # it until it's pointing at a file
-            while currentDiskMap[lastFileIndex] == None:
-                lastFileIndex -= 1
-        else:
-            index += 1
-        print("====================================")
     
     return currentDiskMap
 
