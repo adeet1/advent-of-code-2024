@@ -1,5 +1,5 @@
 import copy
-from collections import Counter
+from collections import Counter, defaultdict
 
 disk = ""
 with open("input/day9.txt", "r") as file:
@@ -57,6 +57,8 @@ def compactDiskPart1(diskMap):
 def computeChecksum(compactedDiskMap):
     checksum = 0
     for i in range(len(compactedDiskMap)):
+        if compactedDiskMap[i] == None:
+            continue
         checksum += i * compactedDiskMap[i]
     return checksum
 
@@ -76,49 +78,87 @@ def compactDiskPart2(diskMap):
 
     # Maps index -> the number of free spaces available, starting at that index until
     # the next allocated space
-    freeSpaceRange = {}
-    i = 0
-    while i < len(currentDiskMap):
-        # If we're at a free space
-        if currentDiskMap[i] == None:
-            # Count the number of free spaces available at
-            # this index, until the next allocated space
-            j = i
-            while currentDiskMap[j] == None:
-                j += 1
-                if j >= len(currentDiskMap):
+    def updateFreeSpaceMap(currentDiskMap):
+        freeSpaceMap = {}
+        i = 0
+        while i < len(currentDiskMap):
+            # If we're at a free space
+            if currentDiskMap[i] == None:
+                # Count the number of free spaces available at
+                # this index, until the next allocated space
+                j = i
+                while currentDiskMap[j] == None:
+                    j += 1
+                    if j >= len(currentDiskMap):
+                        break
+                freeSpaceMap[i] = j-i
+
+                i = j
+            else:
+                i += 1
+        return freeSpaceMap
+
+    freeSpaceMap = updateFreeSpaceMap(currentDiskMap)
+
+    # A map telling us the size of each unmoved file
+    fileSizes = Counter(currentDiskMap)
+    del fileSizes[None]
+    # print("Size of each file:", fileSizes)
+
+    # A map mapping file id to its starting position in the disk map
+    fileLocations = defaultdict(int, {k: None for k in fileSizes.keys()})
+    for i in range(len(currentDiskMap)):
+        if fileLocations[currentDiskMap[i]] == None:
+            fileLocations[currentDiskMap[i]] = i
+    # print("Starting location of each file:", fileLocations)
+
+    # The first file to move is the one with the biggest ID
+    fileToMove = max(fileSizes.keys())
+
+    for fileToMove in range(fileToMove, -1, -1):
+        sizeOfFileToMove = fileSizes[fileToMove]
+        # print("Trying to move file with id", fileToMove, ": has size", sizeOfFileToMove)
+        # print("Free space map:", freeSpaceMap)
+
+        # Move the file to the leftmost span of free space blocks that can fit the file
+        for freeSpaceIndex in freeSpaceMap.keys():
+            freeSpace = freeSpaceMap[freeSpaceIndex]
+
+            # If there's enough free space for the file to fit here
+            if sizeOfFileToMove <= freeSpace:
+                # We only want to move the file left of where it is - if this free
+                # space is to the right of where the file is located, then we shouldn't
+                # move the file at all
+                originalStartIndex = fileLocations[fileToMove]
+                if freeSpaceIndex >= originalStartIndex:
                     break
-            freeSpaceRange[i] = j-i
-            print("Found {} free spaces at index {}".format(j-i, i))
-            i = j
-        else:
-            i += 1
-    
-    print(freeSpaceRange)
-    
-    fileToMove = currentDiskMap[-1]
-    
 
+                # Copy the file here
+                for _ in range(freeSpaceIndex, freeSpaceIndex+sizeOfFileToMove):
+                    currentDiskMap[_] = fileToMove
 
-    
-    """
-    freeSpaceRange = {2: 3, 8: 3, 12: 3, 18: 1, 21: 1, 26: 1, 31: 1, 35: 1}
-    Move file 9
-    freeSpaceRange = {4: 1, 8: 3, 12: 3, 18: 1, 21: 1, 26: 1, 31: 1, 35: 1}
-    
+                # Deallocate the space where the file originally was located
+                for _ in range(originalStartIndex, originalStartIndex+sizeOfFileToMove):
+                    currentDiskMap[_] = None
 
-    
-    """
+                # Update the freeSpaceMap
+                freeSpaceMap = updateFreeSpaceMap(currentDiskMap)
 
-    # A map telling us the size of each file
-    fileSize = Counter(currentDiskMap)
-    print(fileSize)
-    
+                # We're done
+                # print("File moved to index", freeSpaceIndex)
+                break
+            else:
+                # print("Couldn't move file")
+                pass
+        
+        # print(currentDiskMap)
+        # print("===========")
+
     return currentDiskMap
 
 diskMap = createDiskMap(disk)
 #print("Disk map:", diskMap)
 compactedDiskMap = compactDiskPart2(diskMap)
-print("Compacted disk map:", compactedDiskMap)
+#print("Compacted disk map:", compactedDiskMap)
 compactedDiskChecksum = computeChecksum(compactedDiskMap)
 print("Part 2:", compactedDiskChecksum)
